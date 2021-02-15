@@ -1,0 +1,1 @@
+CREATE DABASE local_db IF NOT EXISTS;

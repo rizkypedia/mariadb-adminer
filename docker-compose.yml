@@ -1,0 +1,43 @@
+# tell docker what version of the docker-compose.yml we're using
+version: '3'
+
+networks:
+  web:
+    external: true
+  internal:
+    external: false
+
+services:
+  mariadb:
+   image: mariadb:10.5.8-focal
+   container_name: local_db
+   tty: true
+   environment:
+     MYSQL_ROOT_PASSWORD: toor
+     MYSQL_DATABASE: local_db
+     MYSQL_USER: theflash
+     MYSQL_PASSWORD: soundbarrier
+   logging:
+     driver: syslog
+   networks:
+     - internal
+     - web
+   command: "--max-allowed-packet=8388608"
+   restart: always
+   volumes:
+    - ${PWD}/mariadb:/var/lib/mysql
+    - ${PWD}/setup/db:/dump
+   ports: 
+     - '3306:3306'
+
+  adminer:
+    image: adminer
+    container_name: local_adminer
+    restart: always
+    networks:
+       - internal
+       - web
+    depends_on:
+      - mariadb
+    ports: 
+      - "8081:8080"
